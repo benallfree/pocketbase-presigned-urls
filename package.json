@@ -1,15 +1,23 @@
 {
-  "name": "302",
-  "module": "index.ts",
-  "type": "module",
+  "name": "pocketbase-presigned-urls",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "main": "dist/index.js",
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/url-parse": "^1.4.11"
+    "@types/url-parse": "^1.4.11",
+    "tsup": "^8.3.5"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "url-parse": "^1.5.10"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

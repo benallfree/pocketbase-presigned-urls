@@ -1,0 +1,14 @@
+{
+  "name": "v22",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pocketbase-22 --dev --dir=pb_data --http=0.0.0.0:8090 serve"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "pocketbase-presigned-urls": ".."
+  }
+}
