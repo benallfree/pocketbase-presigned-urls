@@ -17,7 +17,9 @@ export const getSignedUrl = (referer: URL<any>, servedPath: string) => {
   }
 
   const setting = $app.settings()
-  if (!setting.s3.enabled) null
+  if (!setting.s3.enabled) {
+    return null
+  }
 
   const url = createPresignedUrl(
     setting.s3.bucket,
