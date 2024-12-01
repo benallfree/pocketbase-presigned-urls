@@ -5,6 +5,17 @@
     "build": "tsup",
     "dev": "tsup --watch"
   },
+  "description": "Pocketbase plugin to generate presigned URLs for file downloads",
+  "authors": [
+    {
+      "name": "Ben Allfree",
+      "url": "https://github.com/benallfree"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benallfree/pocketbase-presigned-urls.git"
+  },
   "main": "dist/index.js",
   "devDependencies": {
     "@types/bun": "latest",
