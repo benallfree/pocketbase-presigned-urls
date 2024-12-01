@@ -1,4 +1,4 @@
-/// <reference types="../v22/pb_data/types.d.ts" />
+/// <reference types="../v23/pb_data/types.d.ts" />
 
 import URL from 'url-parse'
 import { getSignedUrl, setHeaders } from './util'
@@ -27,7 +27,7 @@ export const HandleFileDownloadRequestV23 = (
     return e.next()
   }
 
-  e.response.redirect(302, url)
+  e.redirect(302, url)
 }
 
 export const HandleHeadersV22 = (next: echo.HandlerFunc, c: echo.Context) => {

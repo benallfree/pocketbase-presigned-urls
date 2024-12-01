@@ -1,6 +1,6 @@
 console.log(`pocketbase-presigned-urls`)
 
-const is23 = false //$app.version.startsWith(`0.23`)
+const is23 = !$app.dao
 
 console.log(`is23: ${is23}`)
 if (is23) {
