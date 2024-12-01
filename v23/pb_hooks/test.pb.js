@@ -1,1 +1,1 @@
-require(`pocketbase-presigned-urls/dist/boot`)
+require(`pocketbase-presigned-urls`)

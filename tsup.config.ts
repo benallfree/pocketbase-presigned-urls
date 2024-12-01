@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
-    boot: 'src/boot.ts',
+    lib: 'src/lib.ts',
     index: 'src/index.ts',
   },
   format: ['cjs'],
