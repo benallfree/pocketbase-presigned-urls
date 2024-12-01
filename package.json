@@ -1,0 +1,44 @@
+{
+  "name": "pocketbase-presigned-urls",
+  "version": "0.0.2",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "description": "Pocketbase plugin to generate presigned URLs for file downloads",
+  "authors": [
+    {
+      "name": "Ben Allfree",
+      "url": "https://github.com/benallfree"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benallfree/pocketbase-presigned-urls.git"
+  },
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "@types/bun": "latest",
+    "@types/url-parse": "^1.4.11",
+    "tsup": "^8.3.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "url-parse": "^1.5.10"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://github.com/benallfree"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benallfree/pocketbase-presigned-urls/issues"
+  },
+  "homepage": "https://github.com/benallfree/pocketbase-presigned-urls#readme"
+}

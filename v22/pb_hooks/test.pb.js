@@ -1,0 +1,1 @@
+require(`pocketbase-presigned-urls`)
