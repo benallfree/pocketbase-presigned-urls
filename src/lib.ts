@@ -33,11 +33,21 @@ export const HandleFileDownloadRequestV23 = (
 }
 
 export const HandleHeadersV22 = (next: echo.HandlerFunc, c: echo.Context) => {
+  if (!$app.settings().s3.enabled) {
+    // dbg('S3 is not enabled')
+    return next(c)
+  }
+
   setHeaders(c.response().header())
   next(c)
 }
 
 export const HandleHeadersV23 = (e: core.RequestEvent) => {
+  if (!$app.settings().s3.enabled) {
+    // dbg('S3 is not enabled')
+    return e.next()
+  }
+
   setHeaders(e.response.header())
   return e.next()
 }
