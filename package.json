@@ -29,7 +29,7 @@
     "typescript": "^5.0.0"
   },
   "files": [
-    "create"
+    "pb_hooks"
   ],
   "author": {
     "name": "Ben Allfree",
