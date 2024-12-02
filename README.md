@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-npx degit benallfree/pocketbase-presigned-urls/pb_hooks
+npx tiged benallfree/pocketbase-presigned-urls/pb_hooks pb_hooks
 ```
 
 or
