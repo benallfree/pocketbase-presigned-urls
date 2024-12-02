@@ -1,5 +1,13 @@
 # pocketbase-presigned-urls
 
+## 0.0.5
+
+### Patch Changes
+
+- f6b336d: Add support for PBPU_TTL
+- de6aed7: PBPU_ADMIN_COMPAT support
+- 7101423: Fix: do not rewrite headers if s3 storage is disabled
+
 ## 0.0.4
 
 ### Patch Changes
