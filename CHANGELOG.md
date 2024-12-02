@@ -1,5 +1,13 @@
 # pocketbase-presigned-urls
 
+## 0.0.4
+
+### Patch Changes
+
+- 68440d4: Require <=0.22.\* or >=0.23.4
+- 7a72ade: Move to tiged installation
+- 68440d4: Enhance CSP header modification
+
 ## 0.0.3
 
 ### Patch Changes
