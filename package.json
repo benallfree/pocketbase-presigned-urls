@@ -21,6 +21,8 @@
     "@changesets/cli": "^2.27.10",
     "@types/bun": "latest",
     "@types/url-parse": "^1.4.11",
+    "prettier": "^3.4.1",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "tsup": "^8.3.5"
   },
   "peerDependencies": {
@@ -40,5 +42,13 @@
   "bugs": {
     "url": "https://github.com/benallfree/pocketbase-presigned-urls/issues"
   },
-  "homepage": "https://github.com/benallfree/pocketbase-presigned-urls#readme"
+  "homepage": "https://github.com/benallfree/pocketbase-presigned-urls#readme",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ]
+  }
 }
