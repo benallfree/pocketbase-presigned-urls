@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/benallfree/pocketbase-presigned-urls.git"
   },
-  "main": "dist/index.js",
+  "main": "create/pb_hooks/pocketbase-presigned-urls.pb.js",
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
     "@types/bun": "latest",
@@ -29,7 +29,7 @@
     "typescript": "^5.0.0"
   },
   "files": [
-    "dist"
+    "create"
   ],
   "author": {
     "name": "Ben Allfree",
