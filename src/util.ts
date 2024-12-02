@@ -1,4 +1,3 @@
-import type URL from 'url-parse'
 import { createPresignedUrl } from './presign'
 
 const mkPolicy = () => {
@@ -10,9 +9,10 @@ export const setHeaders = (header: http.Header) => {
   header.set('X-PocketHost-S3-Presigned-URL', `true`)
 }
 
-export const getSignedUrl = (referer: URL<any>, servedPath: string) => {
+export const getSignedUrl = (referer: string, servedPath: string) => {
+  const path = extractPathFromReferer(referer)
   console.log(`referer`, JSON.stringify(referer))
-  if (referer.pathname === '/_' || referer.pathname.startsWith(`/_/`)) {
+  if (path === '/_' || path.startsWith(`/_/`)) {
     return
   }
 
@@ -31,4 +31,24 @@ export const getSignedUrl = (referer: URL<any>, servedPath: string) => {
   )
 
   return url
+}
+
+export function extractPathFromReferer(referer: string) {
+  if (!referer) return ''
+
+  // Find the start of the path by locating the first single slash after the protocol
+  const pathStartIndex = referer.indexOf('/', referer.indexOf('//') + 2)
+
+  if (pathStartIndex === -1) return '/' // If no path is found, return root
+
+  // Extract the path from the referer
+  const path = referer.substring(pathStartIndex)
+
+  // Find the end of the path by locating the first occurrence of '?' or '#'
+  const pathEndIndex = Math.min(
+    path.indexOf('?') !== -1 ? path.indexOf('?') : path.length,
+    path.indexOf('#') !== -1 ? path.indexOf('#') : path.length
+  )
+
+  return path.substring(0, pathEndIndex)
 }

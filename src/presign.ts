@@ -8,7 +8,7 @@ export const createPresignedUrl = (
   secretKey: string,
   endpoint = 's3.amazonaws.com',
   region = 'us-east-1',
-  expiresIn = 3600,
+  expiresIn = 3600
 ) => {
   const tryDate = new Date()
   const timestamp = Math.floor(tryDate.getTime() / 1000)

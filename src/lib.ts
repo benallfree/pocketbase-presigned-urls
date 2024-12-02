@@ -1,11 +1,9 @@
 /// <reference types="../v23/pb_data/types.d.ts" />
 
-import URL from 'url-parse'
 import { getSignedUrl, setHeaders } from './util'
-import { dbg } from './dbg'
 
 export const HandleFileDownloadRequestV22 = (e: core.FileDownloadEvent) => {
-  const referer = new URL(e.httpContext.request().header.get('referer'))
+  const referer = e.httpContext.request().header.get('referer')
 
   const url = getSignedUrl(referer, `/${e.servedPath}`)
 
@@ -19,7 +17,7 @@ export const HandleFileDownloadRequestV22 = (e: core.FileDownloadEvent) => {
 export const HandleFileDownloadRequestV23 = (
   e: core.FileDownloadRequestEvent
 ) => {
-  const referer = new URL(e.request?.header.get('referer') || '')
+  const referer = e.request?.header.get('referer') || ''
 
   const url = getSignedUrl(referer, `/${e.servedPath}`)
 

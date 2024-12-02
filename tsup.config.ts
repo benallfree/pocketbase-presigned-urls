@@ -2,8 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
-    lib: 'src/lib.ts',
-    index: 'src/index.ts',
+    'pocketbase-presigned-urls.pb': 'src/index.ts',
   },
   format: ['cjs'],
   outExtension: (ext) => {
@@ -11,7 +10,7 @@ export default defineConfig({
   },
   dts: false,
   clean: false,
-  outDir: 'dist',
+  outDir: 'create/pb_hooks',
   shims: true,
   skipNodeModulesBundle: false,
   target: 'node20',
@@ -19,5 +18,6 @@ export default defineConfig({
   minify: false,
   sourcemap: false,
   bundle: true,
-  external: ['pocketbase-presigned-urls', 'url-parse'],
+  noExternal: [/(.*)/],
+  external: ['pocketbase-presigned-urls.pb'],
 })
