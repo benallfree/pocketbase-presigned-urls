@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "dev": "pocketbase-22 --dev --dir=pb_data --hooksDir=../create/pb_hooks --http=0.0.0.0:8090 serve"
+    "dev": "pocketbase-22 --dev --dir=pb_data --hooksDir=../pb_hooks --http=0.0.0.0:8090 serve"
   }
 }
