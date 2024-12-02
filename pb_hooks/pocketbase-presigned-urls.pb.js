@@ -137,10 +137,16 @@ var setHeaders = (header) => {
   header.set("Content-Security-Policy", policy);
   header.set("X-PocketHost-S3-Presigned-URL", `true`);
 };
+var isAdminCompatMode = (path) => {
+  const force = [`true`, `1`, `yes`, `on`].includes(
+    (process.env.PBPU_ADMIN_COMPAT || "").trim().toLowerCase()
+  );
+  return !is23 && (path === "/_" || path.startsWith(`/_/`)) || force;
+};
 var getSignedUrl = (referer, servedPath) => {
   const path = extractPathFromReferer(referer);
   dbg(`referer`, JSON.stringify(referer));
-  if (!is23 && (path === "/_" || path.startsWith(`/_/`))) {
+  if (isAdminCompatMode(path)) {
     return;
   }
   const setting = $app.settings();
