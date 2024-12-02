@@ -34,7 +34,7 @@ module.exports = __toCommonJS(src_exports);
 // src/dbg.ts
 var dbg = (...args) => {
   if (!$app.isDev()) return;
-  const log = [``, `=========`];
+  const log = [``, `====[PBPU]====`];
   args.forEach((obj) => {
     if (typeof obj === "object") {
       log.push(...JSON.stringify(obj, null, 2).split("\n"));
@@ -57,7 +57,7 @@ var hs256Native = (data, key, keyFormat = "HEX") => {
 var hs256 = hs256Native;
 
 // src/presign.ts
-var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint = "s3.amazonaws.com", region = "us-east-1", expiresIn = 3600) => {
+var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint, region, expiresIn = parseInt(process.env.PBPU_TTL || "3600")) => {
   const tryDate = /* @__PURE__ */ new Date();
   const timestamp = Math.floor(tryDate.getTime() / 1e3);
   const datestamp = tryDate.toISOString().replace(/[:-]|\.\d{3}/g, "");
@@ -196,10 +196,16 @@ var HandleFileDownloadRequestV23 = (e) => {
   e.redirect(302, url);
 };
 var HandleHeadersV22 = (next, c) => {
+  if (!$app.settings().s3.enabled) {
+    return next(c);
+  }
   setHeaders(c.response().header());
   next(c);
 };
 var HandleHeadersV23 = (e) => {
+  if (!$app.settings().s3.enabled) {
+    return e.next();
+  }
   setHeaders(e.response.header());
   return e.next();
 };
