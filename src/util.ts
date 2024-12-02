@@ -1,18 +1,52 @@
+import { dbg } from './dbg'
+import { is23 } from './lib'
 import { createPresignedUrl } from './presign'
 
-const mkPolicy = () => {
+const mkPolicy = (existingCsp: string) => {
   const setting = $app.settings()
-  return `img-src 'self' data: blob: https://${setting.s3.bucket}.${setting.s3.endpoint}`
+  const newImgSrc = `https://${setting.s3.bucket}.${setting.s3.endpoint}`
+  const defaultSources = `'self' data: blob:`
+
+  // If no existing CSP, create new one with default sources and new img-src
+  if (!existingCsp) {
+    return `img-src ${defaultSources} ${newImgSrc}`
+  }
+
+  // Find existing img-src directive
+  const imgSrcMatch = existingCsp.match(/img-src ([^;]+)/)
+
+  if (imgSrcMatch) {
+    // Get existing sources
+    const existingSources = imgSrcMatch[1]
+    const missingDefaults = []
+
+    // Check which default sources are missing
+    if (!existingSources.includes("'self'")) missingDefaults.push("'self'")
+    if (!existingSources.includes('data:')) missingDefaults.push('data:')
+    if (!existingSources.includes('blob:')) missingDefaults.push('blob:')
+
+    // Add new source and any missing defaults to existing img-src directive
+    const updatedImgSrc =
+      `img-src ${existingSources} ${missingDefaults.join(' ')} ${newImgSrc}`.trim()
+    return existingCsp.replace(/img-src ([^;]+)/, updatedImgSrc)
+  }
+
+  // No img-src directive found, append new one with all sources
+  return `${existingCsp}; img-src ${defaultSources} ${newImgSrc}`
 }
+
 export const setHeaders = (header: http.Header) => {
-  header.set('Content-Security-Policy', mkPolicy())
+  const existingCsp = header.get('Content-Security-Policy') || ''
+  const policy = mkPolicy(existingCsp)
+  dbg({ policy })
+  header.set('Content-Security-Policy', policy)
   header.set('X-PocketHost-S3-Presigned-URL', `true`)
 }
 
 export const getSignedUrl = (referer: string, servedPath: string) => {
   const path = extractPathFromReferer(referer)
-  console.log(`referer`, JSON.stringify(referer))
-  if (path === '/_' || path.startsWith(`/_/`)) {
+  dbg(`referer`, JSON.stringify(referer))
+  if (!is23 && (path === '/_' || path.startsWith(`/_/`))) {
     return
   }
 

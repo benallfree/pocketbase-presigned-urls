@@ -1,12 +1,9 @@
-export * from './lib'
+import { is23, isBoot } from './lib'
 
-const isModule = typeof onFileDownloadRequest === 'undefined'
-const isBoot = !isModule
+export * from './lib'
 
 if (isBoot) {
   console.log(`pocketbase-presigned-urls`)
-
-  const is23 = !$app.dao
 
   console.log(`is23: ${is23}`)
   if (is23) {

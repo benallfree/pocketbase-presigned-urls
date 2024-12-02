@@ -2,6 +2,10 @@
 
 import { getSignedUrl, setHeaders } from './util'
 
+export const is23 = !$app.dao
+export const isModule = typeof onFileDownloadRequest === 'undefined'
+export const isBoot = !isModule
+
 export const HandleFileDownloadRequestV22 = (e: core.FileDownloadEvent) => {
   const referer = e.httpContext.request().header.get('referer')
 

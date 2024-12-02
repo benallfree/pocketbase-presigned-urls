@@ -24,7 +24,10 @@ __export(src_exports, {
   HandleFileDownloadRequestV22: () => HandleFileDownloadRequestV22,
   HandleFileDownloadRequestV23: () => HandleFileDownloadRequestV23,
   HandleHeadersV22: () => HandleHeadersV22,
-  HandleHeadersV23: () => HandleHeadersV23
+  HandleHeadersV23: () => HandleHeadersV23,
+  is23: () => is23,
+  isBoot: () => isBoot,
+  isModule: () => isModule
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -108,18 +111,36 @@ var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint = "s3.ama
 };
 
 // src/util.ts
-var mkPolicy = () => {
+var mkPolicy = (existingCsp) => {
   const setting = $app.settings();
-  return `img-src 'self' data: blob: https://${setting.s3.bucket}.${setting.s3.endpoint}`;
+  const newImgSrc = `https://${setting.s3.bucket}.${setting.s3.endpoint}`;
+  const defaultSources = `'self' data: blob:`;
+  if (!existingCsp) {
+    return `img-src ${defaultSources} ${newImgSrc}`;
+  }
+  const imgSrcMatch = existingCsp.match(/img-src ([^;]+)/);
+  if (imgSrcMatch) {
+    const existingSources = imgSrcMatch[1];
+    const missingDefaults = [];
+    if (!existingSources.includes("'self'")) missingDefaults.push("'self'");
+    if (!existingSources.includes("data:")) missingDefaults.push("data:");
+    if (!existingSources.includes("blob:")) missingDefaults.push("blob:");
+    const updatedImgSrc = `img-src ${existingSources} ${missingDefaults.join(" ")} ${newImgSrc}`.trim();
+    return existingCsp.replace(/img-src ([^;]+)/, updatedImgSrc);
+  }
+  return `${existingCsp}; img-src ${defaultSources} ${newImgSrc}`;
 };
 var setHeaders = (header) => {
-  header.set("Content-Security-Policy", mkPolicy());
+  const existingCsp = header.get("Content-Security-Policy") || "";
+  const policy = mkPolicy(existingCsp);
+  dbg({ policy });
+  header.set("Content-Security-Policy", policy);
   header.set("X-PocketHost-S3-Presigned-URL", `true`);
 };
 var getSignedUrl = (referer, servedPath) => {
   const path = extractPathFromReferer(referer);
-  console.log(`referer`, JSON.stringify(referer));
-  if (path === "/_" || path.startsWith(`/_/`)) {
+  dbg(`referer`, JSON.stringify(referer));
+  if (!is23 && (path === "/_" || path.startsWith(`/_/`))) {
     return;
   }
   const setting = $app.settings();
@@ -149,6 +170,9 @@ function extractPathFromReferer(referer) {
 }
 
 // src/lib.ts
+var is23 = !$app.dao;
+var isModule = typeof onFileDownloadRequest === "undefined";
+var isBoot = !isModule;
 var HandleFileDownloadRequestV22 = (e) => {
   const referer = e.httpContext.request().header.get("referer");
   const url = getSignedUrl(referer, `/${e.servedPath}`);
@@ -175,11 +199,8 @@ var HandleHeadersV23 = (e) => {
 };
 
 // src/index.ts
-var isModule = typeof onFileDownloadRequest === "undefined";
-var isBoot = !isModule;
 if (isBoot) {
   console.log(`pocketbase-presigned-urls`);
-  const is23 = !$app.dao;
   console.log(`is23: ${is23}`);
   if (is23) {
     onFileDownloadRequest((e) => {
@@ -205,5 +226,8 @@ if (isBoot) {
   HandleFileDownloadRequestV22,
   HandleFileDownloadRequestV23,
   HandleHeadersV22,
-  HandleHeadersV23
+  HandleHeadersV23,
+  is23,
+  isBoot,
+  isModule
 });
