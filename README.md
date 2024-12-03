@@ -1,14 +1,16 @@
 # pocketbase-presigned-urls
 
-A PocketBase plugin that optimizes file serving by generating pre-signed S3 URLs, allowing direct access to S3/R2-stored files without proxying through PocketBase.
+A PocketBase plugin that optimizes S3 file serving by generating pre-signed URLs, allowing direct access without proxying through PocketBase.
 
 ## Overview
 
-This plugin intercepts file download requests and redirects them to pre-signed S3 URLs, enabling direct downloads from your S3-compatible storage (like AWS S3 or Cloudflare R2). This approach offers several benefits:
+This plugin intercepts file download requests and redirects them to pre-signed S3 URLs, enabling direct downloads from your S3-compatible storage.
+
+**Benefits**
 
 - **Improved Performance**: Files are served directly from the CDN/S3 endpoint rather than being proxied through PocketBase
 - **Reduced Server Load**: PocketBase doesn't have to handle the file transfer, freeing up resources
-- **Better Scalability**: Leverages S3's infrastructure for file delivery
+- **Better Scalability**: Leverages your S3 provider's infrastructure for file delivery
 
 ## Prerequisites
 
@@ -31,10 +33,10 @@ cp -r node_modules/pocketbase-presigned-urls/pb_hooks .
 
 ### Environment Variables
 
-| Variable            | Description                                                                 | Default       |
-| ------------------- | --------------------------------------------------------------------------- | ------------- |
-| `PBPU_TTL`          | Time-to-live in seconds for pre-signed URLs                                 | 3600 (1 hour) |
-| `PBPU_ADMIN_COMPAT` | Enable compatibility mode for PocketBase Admin UI in versions 0.23.0-0.23.3 | false         |
+| Variable            | Description                                 | Default         |
+| ------------------- | ------------------------------------------- | --------------- |
+| `PBPU_TTL`          | Time-to-live in seconds for pre-signed URLs | `60` (1 minute) |
+| `PBPU_ADMIN_COMPAT` | Disable inside Admin UI                     | `false`         |
 
 ## Security Considerations
 
@@ -46,10 +48,7 @@ While this plugin improves performance, it comes with some security trade-offs t
 
 ## Compatibility
 
-- PocketBase <=0.22.\*
-- PocketBase >=0.23.4
-
-**Note**: For PocketBase 0.23.0-0.23.3, you must set `PBPU_ADMIN_COMPAT=true` environment variable to prevent admin UI redirect issues.
+This plugin works with all PocketBase versions. In versions <0.23.4, the plugin will fall back to compatibility mode inside the admin UI. In versions >=0.23.4, the plugin will use redirects inside the admin UI as well. If you need to control this behavior explicitly, you can set `PBPU_ADMIN_COMPAT=true` environment variable.
 
 ## How It Works
 
@@ -57,9 +56,3 @@ While this plugin improves performance, it comes with some security trade-offs t
 2. It generates a pre-signed URL using AWS Signature V4 signing process
 3. The client is redirected to the pre-signed URL
 4. The file is served directly from S3/R2
-
-The plugin automatically handles:
-
-- Content Security Policy (CSP) headers for S3 domains
-- Version-specific PocketBase compatibility
-- Admin UI compatibility modes
