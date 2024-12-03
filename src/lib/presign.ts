@@ -8,7 +8,7 @@ export const createPresignedUrl = (
   secretKey: string,
   endpoint: string,
   region: string,
-  expiresIn = parseInt(process.env.PBPU_TTL || '3600')
+  expiresIn = parseInt(process.env.PBPU_TTL || '60')
 ) => {
   const tryDate = new Date()
   const timestamp = Math.floor(tryDate.getTime() / 1000)

@@ -67,7 +67,7 @@ var hs256Native = (data, key, keyFormat = "HEX") => {
 var hs256 = hs256Native;
 
 // src/lib/presign.ts
-var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint, region, expiresIn = parseInt(process.env.PBPU_TTL || "3600")) => {
+var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint, region, expiresIn = parseInt(process.env.PBPU_TTL || "60")) => {
   const tryDate = /* @__PURE__ */ new Date();
   const timestamp = Math.floor(tryDate.getTime() / 1e3);
   const datestamp = tryDate.toISOString().replace(/[:-]|\.\d{3}/g, "");
