@@ -1,6 +1,6 @@
 # pocketbase-presigned-urls
 
-A PocketBase plugin that optimizes S3 file serving by generating pre-signed URLs, allowing direct access without proxying through PocketBase.
+A PocketBase JSVM plugin that optimizes S3 file serving by generating pre-signed URLs, allowing direct access without proxying through PocketBase.
 
 ## Overview
 
