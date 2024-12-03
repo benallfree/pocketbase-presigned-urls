@@ -25,13 +25,23 @@ __export(src_exports, {
   HandleFileDownloadRequestV23: () => HandleFileDownloadRequestV23,
   HandleHeadersV22: () => HandleHeadersV22,
   HandleHeadersV23: () => HandleHeadersV23,
-  is23: () => is23,
+  VERSION: () => VERSION,
+  _version: () => _version,
+  gt: () => gt,
+  gte: () => gte,
+  is23Api: () => is23Api,
   isBoot: () => isBoot,
-  isModule: () => isModule
+  isLegacyApi: () => isLegacyApi,
+  isModule: () => isModule,
+  lt: () => lt,
+  lte: () => lte,
+  major: () => major,
+  minor: () => minor,
+  patch: () => patch
 });
 module.exports = __toCommonJS(src_exports);
 
-// src/dbg.ts
+// src/lib/dbg.ts
 var dbg = (...args) => {
   if (!$app.isDev()) return;
   const log = [``, `====[PBPU]====`];
@@ -45,7 +55,7 @@ var dbg = (...args) => {
   log.forEach((line) => console.log(line));
 };
 
-// src/hs256.ts
+// src/lib/hs256.ts
 var hs256Native = (data, key, keyFormat = "HEX") => {
   return $security.hs256(
     data,
@@ -56,7 +66,7 @@ var hs256Native = (data, key, keyFormat = "HEX") => {
 };
 var hs256 = hs256Native;
 
-// src/presign.ts
+// src/lib/presign.ts
 var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint, region, expiresIn = parseInt(process.env.PBPU_TTL || "3600")) => {
   const tryDate = /* @__PURE__ */ new Date();
   const timestamp = Math.floor(tryDate.getTime() / 1e3);
@@ -110,7 +120,7 @@ var createPresignedUrl = (bucket, path, accessKey, secretKey, endpoint, region, 
   return finalUrl;
 };
 
-// src/util.ts
+// src/lib/util.ts
 var mkPolicy = (existingCsp) => {
   const setting = $app.settings();
   const newImgSrc = `https://${setting.s3.bucket}.${setting.s3.endpoint}`;
@@ -141,7 +151,7 @@ var isAdminCompatMode = (path) => {
   const force = [`true`, `1`, `yes`, `on`].includes(
     (process.env.PBPU_ADMIN_COMPAT || "").trim().toLowerCase()
   );
-  return !is23 && (path === "/_" || path.startsWith(`/_/`)) || force;
+  return lte(VERSION, "0.23.4") && (path === "/_" || path.startsWith(`/_/`)) || force;
 };
 var getSignedUrl = (referer, servedPath) => {
   const path = extractPathFromReferer(referer);
@@ -150,9 +160,6 @@ var getSignedUrl = (referer, servedPath) => {
     return;
   }
   const setting = $app.settings();
-  if (!setting.s3.enabled) {
-    return null;
-  }
   const url = createPresignedUrl(
     setting.s3.bucket,
     servedPath,
@@ -175,10 +182,7 @@ function extractPathFromReferer(referer) {
   return path.substring(0, pathEndIndex);
 }
 
-// src/lib.ts
-var is23 = !$app.dao;
-var isModule = typeof onFileDownloadRequest === "undefined";
-var isBoot = !isModule;
+// src/handlers/HandleFileDownloadRequestV22.ts
 var HandleFileDownloadRequestV22 = (e) => {
   const referer = e.httpContext.request().header.get("referer");
   const url = getSignedUrl(referer, `/${e.servedPath}`);
@@ -187,6 +191,8 @@ var HandleFileDownloadRequestV22 = (e) => {
   }
   e.httpContext.redirect(302, url);
 };
+
+// src/handlers/HandleFileDownloadRequestV23.ts
 var HandleFileDownloadRequestV23 = (e) => {
   const referer = e.request?.header.get("referer") || "";
   const url = getSignedUrl(referer, `/${e.servedPath}`);
@@ -195,6 +201,8 @@ var HandleFileDownloadRequestV23 = (e) => {
   }
   e.redirect(302, url);
 };
+
+// src/handlers/HandleHeadersV22.ts
 var HandleHeadersV22 = (next, c) => {
   if (!$app.settings().s3.enabled) {
     return next(c);
@@ -202,6 +210,8 @@ var HandleHeadersV22 = (next, c) => {
   setHeaders(c.response().header());
   next(c);
 };
+
+// src/handlers/HandleHeadersV23.ts
 var HandleHeadersV23 = (e) => {
   if (!$app.settings().s3.enabled) {
     return e.next();
@@ -211,10 +221,37 @@ var HandleHeadersV23 = (e) => {
 };
 
 // src/index.ts
+var gt = (a, b) => {
+  const [aMajor, aMinor, aPatch] = a.split(".").map(Number);
+  const [bMajor, bMinor, bPatch] = b.split(".").map(Number);
+  return aMajor > bMajor || aMajor === bMajor && aMinor > bMinor || aMajor === bMajor && aMinor === bMinor && aPatch > bPatch;
+};
+var gte = (a, b) => {
+  const [aMajor, aMinor, aPatch] = a.split(".").map(Number);
+  const [bMajor, bMinor, bPatch] = b.split(".").map(Number);
+  return aMajor > bMajor || aMajor === bMajor && aMinor > bMinor || aMajor === bMajor && aMinor === bMinor && aPatch >= bPatch;
+};
+var lte = (a, b) => {
+  return !gt(a, b);
+};
+var lt = (a, b) => {
+  return !gte(a, b);
+};
+var _version = $app.rootCmd?.version;
+if (!_version) {
+  throw new Error("version is undefined");
+}
+var VERSION = _version;
+var [major, minor, patch] = VERSION.split(".").map(Number);
+dbg({ VERSION, major, minor, patch });
+var isLegacyApi = !!$app.dao;
+var is23Api = !$app.dao;
+var isModule = typeof onFileDownloadRequest === "undefined";
+var isBoot = !isModule;
 if (isBoot) {
   console.log(`pocketbase-presigned-urls`);
-  console.log(`is23: ${is23}`);
-  if (is23) {
+  console.log(`is23Api: ${is23Api}`);
+  if (is23Api) {
     onFileDownloadRequest((e) => {
       return require(`${__hooks}/pocketbase-presigned-urls.pb`).HandleFileDownloadRequestV23(e);
     });
@@ -223,7 +260,7 @@ if (isBoot) {
       return require(`${__hooks}/pocketbase-presigned-urls.pb`).HandleFileDownloadRequestV22(e);
     });
   }
-  if (is23) {
+  if (is23Api) {
     routerUse((e) => {
       return require(`${__hooks}/pocketbase-presigned-urls.pb`).HandleHeadersV23(e);
     });
@@ -239,7 +276,17 @@ if (isBoot) {
   HandleFileDownloadRequestV23,
   HandleHeadersV22,
   HandleHeadersV23,
-  is23,
+  VERSION,
+  _version,
+  gt,
+  gte,
+  is23Api,
   isBoot,
-  isModule
+  isLegacyApi,
+  isModule,
+  lt,
+  lte,
+  major,
+  minor,
+  patch
 });

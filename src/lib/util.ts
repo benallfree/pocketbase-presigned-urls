@@ -1,5 +1,5 @@
+import { lte, VERSION } from '..'
 import { dbg } from './dbg'
-import { is23 } from './lib'
 import { createPresignedUrl } from './presign'
 
 const mkPolicy = (existingCsp: string) => {
@@ -47,7 +47,10 @@ const isAdminCompatMode = (path: string) => {
   const force = [`true`, `1`, `yes`, `on`].includes(
     (process.env.PBPU_ADMIN_COMPAT || '').trim().toLowerCase()
   )
-  return (!is23 && (path === '/_' || path.startsWith(`/_/`))) || force
+  return (
+    (lte(VERSION, '0.23.4') && (path === '/_' || path.startsWith(`/_/`))) ||
+    force
+  )
 }
 
 export const getSignedUrl = (referer: string, servedPath: string) => {
@@ -58,9 +61,6 @@ export const getSignedUrl = (referer: string, servedPath: string) => {
   }
 
   const setting = $app.settings()
-  if (!setting.s3.enabled) {
-    return null
-  }
 
   const url = createPresignedUrl(
     setting.s3.bucket,
