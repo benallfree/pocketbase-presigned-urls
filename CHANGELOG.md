@@ -1,5 +1,12 @@
 # pocketbase-presigned-urls
 
+## 0.0.6
+
+### Patch Changes
+
+- bbe3bf1: Autodetect admin compat mode for <0.23.4
+- d45f777: Change default TTL to 1 minute
+
 ## 0.0.5
 
 ### Patch Changes
